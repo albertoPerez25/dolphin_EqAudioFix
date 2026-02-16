@@ -40,8 +40,7 @@ bool OpenSLESStream::Init()
 {
   JNIEnv* env = IDCache::GetEnvForThread();
   jclass audio_utils = IDCache::GetAudioUtilsClass();
-  const SLuint32 sample_rate =
-      env->CallStaticIntMethod(audio_utils, IDCache::GetAudioUtilsGetSampleRate());
+  const SLuint32 sample_rate = 44100;
   m_frames_per_buffer =
       env->CallStaticIntMethod(audio_utils, IDCache::GetAudioUtilsGetFramesPerBuffer());
 
