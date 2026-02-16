@@ -1,4 +1,4 @@
-This fork lets equalizers such as V4A or JDSP process the emu audio even when the game is launched through a frontend with background music.
+This fork lets Android equalizers such as V4A or JDSP process the emu audio even when the game is launched through a frontend with background music.
 
 # Dolphin - A GameCube and Wii Emulator
 
