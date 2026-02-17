@@ -95,7 +95,7 @@ void ShutdownSoundStream(Core::System& system)
 std::string GetDefaultSoundBackend()
 {
 #if defined(ANDROID)
-  return BACKEND_OPENSLES;
+  return BACKEND_CUBEB;
 #else
   if (CubebStream::IsValid())
     return BACKEND_CUBEB;
