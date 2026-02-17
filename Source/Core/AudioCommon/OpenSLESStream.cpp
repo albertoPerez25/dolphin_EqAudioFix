@@ -40,9 +40,10 @@ bool OpenSLESStream::Init()
 {
   JNIEnv* env = IDCache::GetEnvForThread();
   jclass audio_utils = IDCache::GetAudioUtilsClass();
-  const SLuint32 sample_rate = 44100;
+  const SLuint32 sample_rate =
+      env->CallStaticIntMethod(audio_utils, IDCache::GetAudioUtilsGetSampleRate());
   m_frames_per_buffer =
-      env->CallStaticIntMethod(audio_utils, IDCache::GetAudioUtilsGetFramesPerBuffer());
+      env->CallStaticIntMethod(audio_utils, IDCache::GetAudioUtilsGetFramesPerBuffer()) * 2; // Multiply the buffer by 4 to prevent software mixer underruns
 
   INFO_LOG_FMT(AUDIO, "OpenSLES configuration: {} Hz, {} frames per buffer", sample_rate,
                m_frames_per_buffer);
@@ -81,10 +82,11 @@ bool OpenSLESStream::Init()
   SLDataSink audioSnk = {&loc_outmix, nullptr};
 
   // create audio player
-  const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME};
-  const SLboolean req[2] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+  // We are injecting SL_IID_PLAYBACKRATE to intentionally trigger Android's Fast Track rejection!
+  const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME, SL_IID_PLAYBACKRATE};
+  const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
   result = (*m_engine_engine)
-               ->CreateAudioPlayer(m_engine_engine, &m_bq_player_object, &audioSrc, &audioSnk, 2,
+               ->CreateAudioPlayer(m_engine_engine, &m_bq_player_object, &audioSrc, &audioSnk, 3,
                                    ids, req);
   ASSERT(SL_RESULT_SUCCESS == result);
 
